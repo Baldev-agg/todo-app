@@ -15,5 +15,5 @@ mongoose
 
 app.use("/api/todos", require("./routes/todoRoutes"));
 app.listen(5000, () =>
-  console.log('server running on "http://localhost:5000"')
+  console.log('server running on PORT')
 );
