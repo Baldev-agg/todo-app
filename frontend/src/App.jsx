@@ -62,11 +62,17 @@ function App() {
   const totalCount = todos.length;
 
   return (
-    <div className="min-h-screen py-8 px-4" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #faf5ff 100%)' }}>
+    <div
+      className="min-h-screen py-8 px-4"
+      style={{
+        background:
+          "linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #faf5ff 100%)",
+      }}
+    >
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
             ✨ My Tasks
           </h1>
           <p className="text-gray-600 text-lg">Stay organized and productive</p>
@@ -78,7 +84,9 @@ function App() {
           {totalCount > 0 && (
             <div className="px-6 pt-6">
               <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Progress</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Progress
+                </span>
                 <span className="text-sm font-bold text-purple-600">
                   {completedCount}/{totalCount}
                 </span>
@@ -88,7 +96,8 @@ function App() {
                   className="h-2.5 rounded-full transition-all duration-300"
                   style={{
                     width: `${(completedCount / totalCount) * 100}%`,
-                    background: 'linear-gradient(90deg, #3b82f6 0%, #9333ea 100%)',
+                    background:
+                      "linear-gradient(90deg, #3b82f6 0%, #9333ea 100%)",
                   }}
                 ></div>
               </div>
@@ -110,7 +119,8 @@ function App() {
                 onClick={addTodo}
                 className="px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95"
                 style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
+                  background:
+                    "linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)",
                 }}
               >
                 Add
@@ -130,7 +140,9 @@ function App() {
             {!loading && todos.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-5xl mb-3">📭</div>
-                <p className="text-gray-500 text-lg">No tasks yet. Add one to get started!</p>
+                <p className="text-gray-500 text-lg">
+                  No tasks yet. Add one to get started!
+                </p>
               </div>
             ) : (
               <ul className="space-y-2">
@@ -144,11 +156,16 @@ function App() {
                     }`}
                     style={
                       !todo.completed
-                        ? { background: 'linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%)' }
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%)",
+                          }
                         : {}
                     }
                   >
-                    <span className="text-gray-400 font-semibold w-6">{index + 1}.</span>
+                    <span className="text-gray-400 font-semibold w-6">
+                      {index + 1}.
+                    </span>
                     <span
                       className={`flex-1 text-lg transition-all ${
                         todo.completed
@@ -176,9 +193,7 @@ function App() {
                       </button>
                     </div>
 
-                    {todo.completed && (
-                      <span className="text-2xl">✅</span>
-                    )}
+                    {todo.completed && <span className="text-2xl">✅</span>}
                   </li>
                 ))}
               </ul>
@@ -187,18 +202,27 @@ function App() {
 
           {/* Stats Footer */}
           {totalCount > 0 && (
-            <div className="px-6 py-4 border-t border-gray-100 flex justify-around text-center" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%)' }}>
+            <div
+              className="px-6 py-4 border-t border-gray-100 flex justify-around text-center"
+              style={{
+                background: "linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%)",
+              }}
+            >
               <div>
                 <p className="text-gray-600 text-sm">Total</p>
                 <p className="text-2xl font-bold text-gray-800">{totalCount}</p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{completedCount}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {completedCount}
+                </p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm">Remaining</p>
-                <p className="text-2xl font-bold text-orange-600">{totalCount - completedCount}</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {totalCount - completedCount}
+                </p>
               </div>
             </div>
           )}
