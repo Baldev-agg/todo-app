@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+// Connect to the MongoDb Database 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
@@ -17,3 +17,5 @@ app.use("/api/todos", require("./routes/todoRoutes"));
 app.listen(5000, () =>
   console.log('server running on PORT')
 );
+
+
