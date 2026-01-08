@@ -9,6 +9,15 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
 
+    // Validation
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "Please provide all required fields" });
+    }
+    
+    if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
     const existingUser = await User.findOne({ email });
     if(existingUser){
         return res.status(400).json({message: "User already exists"});
@@ -22,17 +31,21 @@ router.post("/register", async (req, res) => {
         password: hashedPassword,
     });
 
-   res.json({message: "User registered successfully"});
+   res.status(201).json({message: "User registered successfully", userId: user._id});
 });
 
 // login user
-
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
+    // Validation
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please provide email and password" });
+    }
+
     const user = await User.findOne({ email });
     if(!user){
-        return res.status(400).json({message: "User does not exist"});
+        return res.status(400).json({message: "Invalid email or password"});
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
