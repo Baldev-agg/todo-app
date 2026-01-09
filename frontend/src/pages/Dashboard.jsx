@@ -71,9 +71,17 @@ function Dashboard() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/landing";
+  const logout = async () => {
+    try {
+      // Call logout endpoint
+      await API.post("/auth/logout");
+    } catch (error) {
+      console.log("Logout error:", error);
+    } finally {
+      // Always clear token and redirect
+      localStorage.removeItem("token");
+      window.location.href = "/landing";
+    }
   };
 
   const completedCount = todos.filter((t) => t.completed).length;

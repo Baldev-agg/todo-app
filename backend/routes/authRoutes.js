@@ -58,4 +58,10 @@ router.post("/login", async (req, res) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
 });
 
+// logout user
+router.post("/logout", (req, res) => {
+    // Token is stored on client-side, just return success
+    res.json({ message: "Logout successful" });
+});
+
 module.exports = router;
