@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: todo-app-backend
+    runtime: node
+    startCommand: npm start
+    buildCommand: npm install
+    envVars:
+      - key: PORT
+        scope: build
+        value: 5000
+      - key: MONGO_URI
+        scope: build
+        sync: false
+      - key: JWT_SECRET
+        scope: build
+        sync: false
+      - key: HOST
+        scope: build
+        value: 0.0.0.0
