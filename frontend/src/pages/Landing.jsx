@@ -8,7 +8,7 @@ function Landing() {
       <nav className="flex justify-between items-center px-6 md:px-12 py-6">
         <div className="flex items-center gap-2">
           <CheckCircle className="text-white" size={32} />
-          <h1 className="text-2xl font-bold text-white">TaskMaster</h1>
+          <h1 className="text-2xl font-bold text-white">TaskMaster Ai</h1>
         </div>
         <div className="flex gap-4">
           <Link
@@ -94,7 +94,7 @@ function Landing() {
                 ))}
               </div>
               <div className="mt-6 text-center">
-                <p className="text-purple-200 text-sm">4 of 8 tasks completed today</p>
+                <p className="text-purple-200 text-sm">2 of 4 tasks completed today</p>
                 <div className="w-full bg-white/10 rounded-full h-2 mt-2">
                   <div className="bg-gradient-to-r from-pink-400 to-purple-400 h-2 rounded-full" style={{ width: "50%" }}></div>
                 </div>
@@ -202,7 +202,7 @@ function Landing() {
       {/* Footer */}
       <div className="border-t border-white/10 py-8 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex justify-between items-center text-purple-200 text-sm">
-          <p>&copy; 2024 TaskMaster. All rights reserved.</p>
+          <p>&copy; 2026 TaskMaster Ai. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white transition">Privacy Policy</a>
             <a href="#" className="hover:text-white transition">Terms of Service</a>
