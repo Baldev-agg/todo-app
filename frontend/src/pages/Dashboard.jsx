@@ -76,7 +76,8 @@ function Dashboard() {
       // Call logout endpoint
       await API.post("/auth/logout");
     } catch (error) {
-      console.log("Logout error:", error);
+      // 404 or other errors on logout endpoint - still proceed with client-side logout
+      console.log("Logout endpoint error (proceeding with client-side logout):", error.message);
     } finally {
       // Always clear token and redirect
       localStorage.removeItem("token");

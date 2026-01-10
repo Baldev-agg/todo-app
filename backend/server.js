@@ -4,7 +4,16 @@ const cors = require("cors");
 require("dotenv").config();
 // Initialize Express app
 const app = express();
-app.use(cors());
+
+// CORS Configuration for Vercel/Production
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Health check endpoint
