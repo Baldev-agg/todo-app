@@ -20,9 +20,24 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 router.put("/:id", authMiddleware, async (req, res) => {
+  const updateData = {};
+  
+  // Update text if provided
+  if (req.body.text !== undefined) {
+    if (req.body.text.trim().length === 0) {
+      return res.status(400).json({ message: "Task text cannot be empty" });
+    }
+    updateData.text = req.body.text.trim();
+  }
+  
+  // Update completed if provided
+  if (req.body.completed !== undefined) {
+    updateData.completed = req.body.completed;
+  }
+  
   const todo = await Todo.findByIdAndUpdate(
     req.params.id,
-    { completed: req.body.completed !== undefined ? req.body.completed : true },
+    updateData,
     { new: true }
   );
   
