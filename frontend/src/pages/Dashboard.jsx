@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
-import { LogOut, Plus, Trash2, Check, CircleCheck, Clock, AlertCircle } from "lucide-react";
+import { LogOut, Plus, Trash2, Check, CircleCheck, Clock, AlertCircle, Edit2, CheckCircle } from "lucide-react";
 
 function Dashboard() {
   const [todos, setTodos] = useState([]);
@@ -9,6 +9,8 @@ function Dashboard() {
   const [error, setError] = useState("");
   const [userName, setUserName] = useState("User");
   const [addingTodo, setAddingTodo] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   // Load todos on mount
   useEffect(() => {
@@ -71,6 +73,32 @@ function Dashboard() {
     }
   };
 
+  const startEdit = (id, currentText) => {
+    setEditingId(id);
+    setEditingText(currentText);
+  };
+
+  const saveEdit = async (id) => {
+    if (!editingText.trim()) {
+      setError("Task text cannot be empty");
+      return;
+    }
+    try {
+      const res = await API.put(`/todos/${id}`, { text: editingText.trim() });
+      setTodos(todos.map((t) => (t._id === id ? res.data : t)));
+      setEditingId(null);
+      setEditingText("");
+      setError("");
+    } catch (err) {
+      setError("Failed to update task");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingText("");
+  };
+
   const logout = async () => {
     try {
       // Call logout endpoint
@@ -91,6 +119,14 @@ function Dashboard() {
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !addingTodo) {
       addTodo();
+    }
+  };
+
+  const handleEditKeyPress = (e, id) => {
+    if (e.key === "Enter") {
+      saveEdit(id);
+    } else if (e.key === "Escape") {
+      cancelEdit();
     }
   };
 
@@ -199,22 +235,64 @@ function Dashboard() {
                     )}
                   </button>
 
-                  <span
-                    className={`flex-1 text-lg transition duration-200 ${
-                      todo.completed
-                        ? "line-through text-gray-400"
-                        : "text-gray-800 font-medium"
-                    }`}
-                  >
-                    {todo.text}
-                  </span>
+                  {editingId === todo._id ? (
+                    <input
+                      type="text"
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      onKeyPress={(e) => handleEditKeyPress(e, todo._id)}
+                      autoFocus
+                      className="flex-1 px-3 py-2 border border-purple-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                    />
+                  ) : (
+                    <span
+                      className={`flex-1 text-lg transition duration-200 ${
+                        todo.completed
+                          ? "line-through text-gray-400"
+                          : "text-gray-800 font-medium"
+                      }`}
+                    >
+                      {todo.text}
+                    </span>
+                  )}
 
-                  <button
-                    onClick={() => deleteTodo(todo._id)}
-                    className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition duration-200"
-                  >
-                    <Trash2 size={20} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {editingId === todo._id ? (
+                      <>
+                        <button
+                          onClick={() => saveEdit(todo._id)}
+                          className="flex-shrink-0 text-green-500 hover:text-green-700 hover:bg-green-50 p-2 rounded-lg transition duration-200"
+                          title="Save (Enter)"
+                        >
+                          <CheckCircle size={20} />
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="flex-shrink-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition duration-200"
+                          title="Cancel (Esc)"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => startEdit(todo._id, todo.text)}
+                          className="flex-shrink-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition duration-200"
+                          title="Edit"
+                        >
+                          <Edit2 size={20} />
+                        </button>
+                        <button
+                          onClick={() => deleteTodo(todo._id)}
+                          className="flex-shrink-0 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition duration-200"
+                          title="Delete"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
