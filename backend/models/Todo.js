@@ -9,6 +9,19 @@ const TodoSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  priority:{
+    type: String,
+    enum: ['Low', 'Medium', 'High'],
+    default: 'Medium'
+  },
+  dueDate: {
+    type: Date,
+    default: null
+  },
+  createdAt:{
+    type: Date,
+    default: Date.now
+  }
 });
 
 // Create the Todo model
