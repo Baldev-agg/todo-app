@@ -15,7 +15,15 @@ router.post("/", authMiddleware, async (req, res) => {
     return res.status(400).json({ message: "Task text is required" });
   }
   
-  const todo = await Todo.create({ text: req.body.text.trim(), completed: false, userId: req.userId });
+  const todoData = {
+    text: req.body.text.trim(),
+    completed: false,
+    userId: req.userId,
+    priority: req.body.priority || 'Medium',
+    dueDate: req.body.dueDate || null
+  };
+  
+  const todo = await Todo.create(todoData);
   res.status(201).json(todo);
 });
 
@@ -33,6 +41,16 @@ router.put("/:id", authMiddleware, async (req, res) => {
   // Update completed if provided
   if (req.body.completed !== undefined) {
     updateData.completed = req.body.completed;
+  }
+  
+  // Update priority if provided
+  if (req.body.priority !== undefined) {
+    updateData.priority = req.body.priority;
+  }
+  
+  // Update dueDate if provided
+  if (req.body.dueDate !== undefined) {
+    updateData.dueDate = req.body.dueDate;
   }
   
   const todo = await Todo.findByIdAndUpdate(
