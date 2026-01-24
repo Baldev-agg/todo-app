@@ -77,8 +77,6 @@ function Dashboard() {
     }
   };
 
-  
-
   const toggleTodo = async (id, completed) => {
     try {
       await API.put(`/todos/${id}`, { completed: !completed });
@@ -139,19 +137,18 @@ function Dashboard() {
   const isOverdue = (todo) => {
     if (todo.completed) return false;
 
-    // If dueDate is set, check if it's in the past
+    const now = new Date();
+    const createdDate = new Date(todo.createdAt);
+
+    // Check if dueDate exists and is past
     if (todo.dueDate) {
       const dueDate = new Date(todo.dueDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return dueDate < today;
+      return dueDate < now;
     }
 
     // Otherwise, check if created more than 24 hours ago
-    const createdDate = new Date(todo.createdAt);
-    const now = new Date();
-    const hoursDifference = (now - createdDate) / (1000 * 60 * 60);
-    return hoursDifference >= 24;
+    const diffHours = (now - createdDate) / (1000 * 60 * 60);
+    return diffHours > 24;
   };
 
   // Helper function to get priority badge styling
@@ -232,24 +229,24 @@ function Dashboard() {
   };
 
   // --- STEP 1: Return se theek pehle sorting logic likho ---
-const priorityWeight = { High: 1, Medium: 2, Low: 3 };
+  const priorityWeight = { High: 1, Medium: 2, Low: 3 };
 
-const sortedTodos = [...todos].sort((a, b) => {
-  const aOverdue = isOverdue(a);
-  const bOverdue = isOverdue(b);
+  const sortedTodos = [...todos].sort((a, b) => {
+    const aOverdue = isOverdue(a);
+    const bOverdue = isOverdue(b);
 
-  // 1. Check for Overdue (Top Priority)
-  if (aOverdue && !bOverdue) return -1;
-  if (!aOverdue && bOverdue) return 1;
+    // 1. Check for Overdue (Top Priority)
+    if (aOverdue && !bOverdue) return -1;
+    if (!aOverdue && bOverdue) return 1;
 
-  // 2. If both are Due or both are not, check Priority
-  if (priorityWeight[a.priority] !== priorityWeight[b.priority]) {
-    return priorityWeight[a.priority] - priorityWeight[b.priority];
-  }
+    // 2. If both are Due or both are not, check Priority
+    if (priorityWeight[a.priority] !== priorityWeight[b.priority]) {
+      return priorityWeight[a.priority] - priorityWeight[b.priority];
+    }
 
-  // 3. Last check: Newest first
-  return new Date(a.createdAt) - new Date(b.createdAt);
-});
+    // 3. Last check: Newest first
+    return new Date(a.createdAt) - new Date(b.createdAt);
+  });
 
   return (
     <div
@@ -365,7 +362,7 @@ const sortedTodos = [...todos].sort((a, b) => {
                     Due Date (Optional)
                   </label>
                   <input
-                    type="date"
+                    type="datetime-local"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
@@ -440,6 +437,7 @@ const sortedTodos = [...todos].sort((a, b) => {
                   {/* Checkbox */}
                   <button
                     onClick={() => toggleTodo(todo._id, todo.completed)}
+                    // disabled={todo.completed}
                     className="flex-shrink-0 transition duration-200"
                     title="Mark as done"
                   >
@@ -473,7 +471,7 @@ const sortedTodos = [...todos].sort((a, b) => {
                             <option value="High">🔴 High</option>
                           </select>
                           <input
-                            type="date"
+                            type="datetime-local"
                             value={editingDueDate}
                             onChange={(e) => setEditingDueDate(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
@@ -505,20 +503,20 @@ const sortedTodos = [...todos].sort((a, b) => {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {editingId === todo._id ? (
                       <>
-                        <button
+                        {/* <button
                           onClick={() => saveEdit(todo._id)}
                           className="flex-shrink-0 text-green-500 hover:text-green-700 hover:bg-green-50 p-2 rounded-lg transition duration-200"
                           title="Save (Enter)"
                         >
                           <CheckCircle size={20} />
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                           onClick={cancelEdit}
                           className="flex-shrink-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition duration-200"
                           title="Cancel (Esc)"
                         >
                           <Trash2 size={20} />
-                        </button>
+                        </button> */}
                       </>
                     ) : (
                       <>
@@ -531,6 +529,7 @@ const sortedTodos = [...todos].sort((a, b) => {
                               todo.dueDate,
                             )
                           }
+                          disabled={todo.completed}
                           className="flex-shrink-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition duration-200"
                           title="Edit"
                         >
