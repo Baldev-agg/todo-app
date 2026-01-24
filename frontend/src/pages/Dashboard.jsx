@@ -77,11 +77,13 @@ function Dashboard() {
     }
   };
 
+  
+
   const toggleTodo = async (id, completed) => {
     try {
       await API.put(`/todos/${id}`, { completed: !completed });
       setTodos(
-        todos.map((t) => (t._id === id ? { ...t, completed: !completed } : t)),
+        todos.map((t) => (t._id === id ? { ...t, completed: !completed } : t)), // Update the todo in the list
       );
     } catch (err) {
       setError("Failed to update task");
@@ -167,18 +169,18 @@ function Dashboard() {
   };
 
   // Helper function to get priority dot color
-  const getPriorityDotColor = (priority) => {
-    switch (priority) {
-      case "High":
-        return "bg-red-600";
-      case "Medium":
-        return "bg-yellow-400";
-      case "Low":
-        return "bg-green-500";
-      default:
-        return "bg-gray-400";
-    }
-  };
+  // const getPriorityDotColor = (priority) => {
+  //   switch (priority) {
+  //     case "High":
+  //       return "bg-red-600";
+  //     case "Medium":
+  //       return "bg-yellow-400";
+  //     case "Low":
+  //       return "bg-green-500";
+  //     default:
+  //       return "bg-gray-400";
+  //   }
+  // };
 
   // Helper function to format due date
   const formatDueDate = (dueDate) => {
@@ -228,6 +230,26 @@ function Dashboard() {
       cancelEdit();
     }
   };
+
+  // --- STEP 1: Return se theek pehle sorting logic likho ---
+const priorityWeight = { High: 1, Medium: 2, Low: 3 };
+
+const sortedTodos = [...todos].sort((a, b) => {
+  const aOverdue = isOverdue(a);
+  const bOverdue = isOverdue(b);
+
+  // 1. Check for Overdue (Top Priority)
+  if (aOverdue && !bOverdue) return -1;
+  if (!aOverdue && bOverdue) return 1;
+
+  // 2. If both are Due or both are not, check Priority
+  if (priorityWeight[a.priority] !== priorityWeight[b.priority]) {
+    return priorityWeight[a.priority] - priorityWeight[b.priority];
+  }
+
+  // 3. Last check: Newest first
+  return new Date(a.createdAt) - new Date(b.createdAt);
+});
 
   return (
     <div
@@ -370,7 +392,7 @@ function Dashboard() {
             </div>
           ) : (
             <div className="space-y-3">
-              {todos.map((todo) => (
+              {sortedTodos.map((todo) => (
                 <div
                   key={todo._id}
                   className={`relative flex items-center gap-4 p-5 mt-5 rounded-2xl border-2 transition-all duration-300 ${
