@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail, Lock, UserPlus, AlertCircle, CheckCircle } from "lucide-react";
+import { User, Mail, Lock, UserPlus, AlertCircle, CheckCircle, ChevronLeft } from "lucide-react";
 
 function Register() {
   const [name, setName] = useState("");
@@ -30,124 +30,105 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" 
-         style={{
-           background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-         }}>
-      <div className="w-full max-w-md">
-        {/* Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block bg-gradient-to-br from-pink-500 to-red-600 rounded-full p-3 mb-4">
-              <UserPlus className="text-white" size={32} />
+    <div className="min-h-screen bg-[#F8F9FB] font-sans antialiased text-slate-900 relative overflow-hidden flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      {/* Decorative Background Blobs (Matching Landing & Login) */}
+      <div className="absolute top-0 right-0 w-[350px] sm:w-[450px] h-[350px] sm:h-[450px] bg-orange-100/50 rounded-full blur-[100px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[350px] h-[300px] sm:h-[350px] bg-indigo-100/40 rounded-full blur-[80px] -z-10 -translate-x-1/4 translate-y-1/4"></div>
+
+      <div className="relative z-10 w-full max-w-md">
+        {/* Back Link */}
+        <Link to="/landing" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors mb-6 text-sm font-semibold group">
+          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          Back to Home
+        </Link>
+
+        {/* Register Card */}
+        <div className="bg-white rounded-[2.5rem] p-6 sm:p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100">
+          <div className="text-center mb-8 sm:mb-10">
+            <div className="inline-flex w-16 h-16 bg-orange-500 rounded-2xl items-center justify-center mb-4 shadow-lg shadow-orange-200">
+              <UserPlus className="text-white" size={30} />
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Get Started</h1>
-            <p className="text-gray-500">Create account to organize your tasks</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Create Account</h1>
+            <p className="text-slate-400 mt-2 font-medium text-sm sm:text-base">Join TaskMaster AI today</p>
           </div>
 
           {/* Success Alert */}
           {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-              <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
+            <div className="mb-6 p-4 bg-green-50 border border-green-100 rounded-2xl flex items-start gap-3 animate-in fade-in zoom-in">
+              <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={18} />
               <div>
-                <p className="text-green-700 text-sm font-medium">Account created successfully!</p>
-                <p className="text-green-600 text-sm">Redirecting to login...</p>
+                <p className="text-green-700 text-sm font-bold">Account created!</p>
+                <p className="text-green-600 text-xs font-medium">Redirecting to login...</p>
               </div>
             </div>
           )}
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
-              <p className="text-red-700 text-sm">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />
+              <p className="text-red-600 text-sm font-semibold">{error}</p>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleRegister} className="space-y-5">
-            {/* Name Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-3 top-3.5 text-gray-400" size={20} />
+          <form onSubmit={handleRegister} className="space-y-5 sm:space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Full Name</label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Baldev Aggarwal"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full pl-12 pr-4 py-3 sm:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all text-slate-800 placeholder:text-slate-300 font-medium text-sm sm:text-base"
                 />
               </div>
             </div>
 
-            {/* Email Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-gray-400" size={20} />
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full pl-12 pr-4 py-3 sm:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all text-slate-800 placeholder:text-slate-300 font-medium text-sm sm:text-base"
                 />
               </div>
             </div>
 
-            {/* Password Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-gray-400" size={20} />
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full pl-12 pr-4 py-3 sm:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all text-slate-800 placeholder:text-slate-300 font-medium text-sm sm:text-base"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters recommended</p>
             </div>
 
-            {/* Register Button */}
             <button
               type="submit"
               disabled={loading || success}
-              className="w-full bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 transform hover:scale-105"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-2xl transition-all shadow-xl shadow-orange-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
             >
               {loading ? "Creating Account..." : "Sign Up"}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm">Already have an account?</span>
-            <div className="flex-1 border-t border-gray-300"></div>
+          <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-slate-50 text-center">
+            <p className="text-slate-400 font-medium text-sm">Already have an account? <Link to="/login" className="text-orange-500 hover:text-orange-600 font-bold">Sign In</Link></p>
           </div>
-
-          {/* Sign In Link */}
-          <Link
-            to="/login"
-            className="block text-center w-full border-2 border-gray-300 hover:border-red-500 text-gray-700 hover:text-red-600 font-semibold py-2.5 rounded-lg transition duration-200"
-          >
-            Sign In Instead
-          </Link>
-
-          {/* Back to Landing */}
-          <Link
-            to="/landing"
-            className="block text-center mt-4 text-gray-500 hover:text-gray-700 text-sm transition"
-          >
-            ← Back to Home
-          </Link>
         </div>
       </div>
     </div>

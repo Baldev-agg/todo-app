@@ -26,7 +26,7 @@ router.post("/", authMiddleware, async (req, res) => {
   const todo = await Todo.create(todoData);
   res.status(201).json(todo);
 });
-
+// Update a todo
 router.put("/:id", authMiddleware, async (req, res) => {
   const updateData = {};
   
@@ -65,7 +65,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
   
   res.json(todo);
 });
-
+// Delete a todo
 router.delete("/:id", authMiddleware, async (req, res) => {
   const todo = await Todo.findByIdAndDelete(req.params.id);
   
