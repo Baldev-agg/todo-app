@@ -14,13 +14,22 @@ function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     try {
       const res = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
-      navigate("/");
+      
+      const redirectUrl = localStorage.getItem("redirectAfterLogin");
+      if (redirectUrl) {
+        localStorage.removeItem("redirectAfterLogin");
+        navigate(redirectUrl);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Login failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -34,8 +43,14 @@ function Login() {
 
       <div className="relative z-10 w-full max-w-md">
         {/* Back Link */}
-        <Link to="/landing" className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors mb-6 text-sm font-semibold group">
-          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <Link
+          to="/landing"
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors mb-6 text-sm font-semibold group"
+        >
+          <ChevronLeft
+            size={16}
+            className="group-hover:-translate-x-1 transition-transform"
+          />
           Back to Home
         </Link>
 
@@ -45,22 +60,34 @@ function Login() {
             <div className="inline-flex w-16 h-16 bg-orange-500 rounded-2xl items-center justify-center mb-4 shadow-lg shadow-orange-200">
               <LogIn className="text-white" size={30} />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Welcome Back</h1>
-            <p className="text-slate-400 mt-2 font-medium text-sm sm:text-base">Please enter your details</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
+              Welcome Back
+            </h1>
+            <p className="text-slate-400 mt-2 font-medium text-sm sm:text-base">
+              Please enter your details
+            </p>
           </div>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={18} />
+              <AlertCircle
+                className="text-red-500 flex-shrink-0 mt-0.5"
+                size={18}
+              />
               <p className="text-red-600 text-sm font-semibold">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                Email Address
+              </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"
+                  size={20}
+                />
                 <input
                   type="email"
                   placeholder="name@company.com"
@@ -73,9 +100,14 @@ function Login() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Password</label>
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                Password
+              </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"
+                  size={20}
+                />
                 <input
                   type="password"
                   placeholder="••••••••"
@@ -97,7 +129,15 @@ function Login() {
           </form>
 
           <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-slate-50 text-center">
-            <p className="text-slate-400 font-medium text-sm">Don't have an account? <Link to="/register" className="text-orange-500 hover:text-orange-600 font-bold">Sign Up</Link></p>
+            <p className="text-slate-400 font-medium text-sm">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-orange-500 hover:text-orange-600 font-bold"
+              >
+                Sign Up
+              </Link>
+            </p>
           </div>
         </div>
       </div>

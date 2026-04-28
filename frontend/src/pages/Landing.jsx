@@ -17,7 +17,8 @@ const styles = `
     --text-light: #B0B0C0;
   }
 
-  html { scroll-behavior: smooth; }
+  /* FIX 1: Add overflow-x: hidden to prevent horizontal scroller */
+  html, body { scroll-behavior: smooth; overflow-x: hidden; margin: 0; padding: 0; max-width: 100vw; }
 
   body { font-family: 'Inter', sans-serif; }
 
@@ -26,13 +27,15 @@ const styles = `
     background: #F8F9FB;
     min-height: 100vh;
     color: var(--text-dark);
+    overflow-x: hidden;
+    width: 100%;
   }
 
   /* NAV */
   .e-nav {
     display: flex;
     align-items: center;
-    padding: 22px 24px;
+    padding: 20px 24px;
     background: #F8F9FB;
     position: sticky;
     top: 0;
@@ -40,15 +43,14 @@ const styles = `
     border-bottom: 1px solid #EBEBF5;
     backdrop-filter: blur(10px);
     background: rgba(248,249,251,0.92);
-    flex-wrap: wrap;
     justify-content: space-between;
   }
   @media (min-width: 768px) {
-    .e-nav { padding: 22px 44px; flex-wrap: nowrap; }
+    .e-nav { padding: 22px 44px; }
   }
   .e-logo {
     display: flex; align-items: center; gap: 10px;
-    text-decoration: none; margin-right: 16px;
+    text-decoration: none;
   }
   @media (min-width: 768px) {
     .e-logo { margin-right: 48px; }
@@ -76,9 +78,9 @@ const styles = `
     color: var(--text-dark); transition: color .2s;
   }
   .e-nav-links a:hover { color: var(--orange); }
-  .e-nav-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; width: 100%; }
+  .e-nav-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
   @media (min-width: 768px) {
-    .e-nav-actions { width: auto; gap: 16px; }
+    .e-nav-actions { gap: 16px; }
   }
   .btn-signin-e {
     background: none; border: none; font-size: 14px; font-weight: 600;
@@ -101,12 +103,11 @@ const styles = `
     text-align: center;
     padding: 40px 20px 0;
     animation: fadeUp .6s ease both;
+    max-width: 1000px;
+    margin: 0 auto;
   }
   @media (min-width: 768px) {
     .e-hero { padding: 60px 44px 0; }
-  }
-  @media (min-width: 1024px) {
-    .e-hero { padding: 72px 44px 0; }
   }
   .e-hero h1 {
     font-family: 'Nunito', sans-serif;
@@ -121,15 +122,14 @@ const styles = `
   }
   .e-hero p {
     margin-top: 18px;
-    font-size: clamp(14px, 3vw, 15px);
+    font-size: clamp(14px, 3vw, 16px);
     color: var(--text-muted);
-    max-width: 500px;
+    max-width: 540px;
     margin-left: auto; margin-right: auto;
     line-height: 1.7;
     animation: fadeUp .6s .2s ease both;
     opacity: 0;
     animation-fill-mode: forwards;
-    padding: 0 10px;
   }
   .hero-btns {
     display: flex; justify-content: center; gap: 12px; margin-top: 32px; flex-wrap: wrap;
@@ -142,14 +142,14 @@ const styles = `
   }
   .btn-get-started {
     background: var(--orange); color: #fff; border: none;
-    border-radius: 12px; padding: 12px 24px;
-    font-size: 14px; font-weight: 700; font-family: 'Nunito', sans-serif;
+    border-radius: 12px; padding: 14px 30px;
+    font-size: 15px; font-weight: 700; font-family: 'Nunito', sans-serif;
     cursor: pointer; box-shadow: 0 8px 24px rgba(247,123,58,.38);
     transition: transform .18s, box-shadow .18s; width: 100%;
-    text-decoration: none; display: inline-block;
+    text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
   }
   @media (min-width: 768px) {
-    .btn-get-started { padding: 14px 30px; font-size: 15px; width: auto; }
+    .btn-get-started { width: auto; }
   }
   .btn-get-started:hover {
     transform: translateY(-2px);
@@ -158,29 +158,32 @@ const styles = `
   }
   .btn-discover {
     background: #fff; border: 2px solid #E4E4EE;
-    border-radius: 12px; padding: 12px 24px;
-    font-size: 14px; font-weight: 700; font-family: 'Nunito', sans-serif;
+    border-radius: 12px; padding: 14px 30px;
+    font-size: 15px; font-weight: 700; font-family: 'Nunito', sans-serif;
     color: var(--text-dark); cursor: pointer;
-    display: inline-flex; align-items: center; gap: 8px; width: 100%;
-    transition: all .18s; justify-content: center;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    transition: all .18s;
   }
   @media (min-width: 768px) {
-    .btn-discover { padding: 14px 30px; font-size: 15px; width: auto; }
+    .btn-discover { width: auto; }
   }
   .btn-discover:hover { border-color: var(--orange); color: var(--orange); }
 
-  /* PREVIEW AREA */
+  /* FIX 2: PREVIEW AREA MAX-WIDTH FOR DESKTOP SPACING */
   .preview-area {
     position: relative;
-    margin-top: 32px;
+    margin: 40px auto 0;
     padding: 0 16px;
-    animation: fadeUp .6s .4s ease both;
+    max-width: 1400px;
+    width: 100%;
+    animation: fadeUp .18s .4s ease both;
     opacity: 0;
     animation-fill-mode: forwards;
   }
   @media (min-width: 768px) {
-    .preview-area { margin-top: 48px; padding: 0 24px; }
+    .preview-area { margin-top: 56px; padding: 0 24px; }
   }
+
   .dot-grid {
     position: absolute; display: grid; gap: 8px; z-index: 0; pointer-events: none;
   }
@@ -189,22 +192,26 @@ const styles = `
   .dot-grid span { width: 4px; height: 4px; border-radius: 50%; background: #C8D8C6; display: block; }
   .deco-circle {
     position: absolute; width: 120px; height: 120px; border-radius: 50%;
-    background: var(--yellow); left: 60px; top: -10px; z-index: 0; opacity: .85;
+    background: var(--yellow); left: 40px; top: -10px; z-index: 0; opacity: .85;
   }
   .deco-dot-green {
     position: absolute; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--green-dark); left: 56px; bottom: 60px; z-index: 1;
+    background: var(--green-dark); left: 36px; bottom: 60px; z-index: 1;
   }
   .deco-dot-green2 {
     position: absolute; right: 30px; bottom: 20px;
     width: 32px; height: 32px; border-radius: 50%;
     background: var(--green-dark); z-index: 1;
   }
-  .floating-cards { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; z-index: 5; }
 
-  /* Floating Cards */
+  /* Floating Cards Fixes */
+  .floating-cards { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; z-index: 5; }
+  @media (max-width: 1100px) {
+     .floating-cards { display: none; } /* Hide on smaller screens to prevent overlap/scroll */
+  }
+
   .card-lp {
-    position: absolute; left: -10px; top: 20px;
+    position: absolute; left: 0; top: 20px;
     background: #fff; border-radius: 14px;
     box-shadow: 0 12px 36px rgba(0,0,0,.10);
     padding: 16px 20px; width: 148px;
@@ -243,7 +250,7 @@ const styles = `
   .user-info .email{ font-size: 10px; color: var(--text-muted); }
 
   .card-inv {
-    position: absolute; right: -6px; top: 30px;
+    position: absolute; right: 0; top: 30px;
     background: #fff; border-radius: 14px;
     box-shadow: 0 12px 36px rgba(0,0,0,.10);
     padding: 18px 20px; width: 136px; text-align: center;
@@ -265,17 +272,17 @@ const styles = `
   /* DASHBOARD OUTER */
   .dashboard-outer {
     position: relative; z-index: 3;
-    margin: 0 16px;
+    margin: 0 16px; /* Mobile margin */
     background: #fff;
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 40px rgba(0,0,0,.09);
-    overflow: hidden; display: flex; min-height: 360px; flex-direction: column;
+    overflow: hidden; display: flex; flex-direction: column; min-height: 360px;
   }
   @media (min-width: 768px) {
-    .dashboard-outer { margin: 0 40px; flex-direction: row; }
+    .dashboard-outer { flex-direction: row; margin: 0 40px; } /* Tablet margin */
   }
   @media (min-width: 1024px) {
-    .dashboard-outer { margin: 0 80px; }
+    .dashboard-outer { margin: 0 80px; } /* Desktop wide margin */
   }
   .e-sidebar {
     display: none; flex-shrink: 0;
@@ -315,15 +322,21 @@ const styles = `
   .main-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
   .panel-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 22px 10px; border-bottom: 1px solid #F0F0F8;
+    padding: 16px 20px 10px; border-bottom: 1px solid #F0F0F8;
   }
-  .panel-header h2 { font-size:15px; font-weight:800; color:var(--text-dark); font-family:'Nunito',sans-serif; }
+  .panel-header h2 { font-size:15px; font-weight:800; color:var(--text-dark); font-family:'Nunito',sans-serif; margin:0; }
   .date-badge {
     display: flex; align-items: center; gap: 6px;
     background: #F6F6FA; border-radius: 8px;
     padding: 5px 11px; font-size: 11px; font-weight: 600; color: var(--text-muted);
   }
-  .panel-body { display:flex; gap:14px; padding:14px 22px; flex:1; overflow:hidden; }
+  
+  /* FIX 4: Column direction on mobile for inner body */
+  .panel-body { display:flex; flex-direction: column; gap:14px; padding:14px 20px; flex:1; overflow:hidden; }
+  @media (min-width: 768px) {
+    .panel-body { flex-direction: row; padding: 14px 22px; }
+  }
+
   .panel-left { flex:1; display:flex; flex-direction:column; gap:12px; min-width:0; }
 
   /* Welcome banner */
@@ -332,7 +345,7 @@ const styles = `
     border-radius: 14px; padding: 18px 20px;
     position: relative; overflow: hidden; flex-shrink: 0;
   }
-  .welcome-banner h3 { font-size:14px; font-weight:800; color:var(--text-dark); font-family:'Nunito',sans-serif; }
+  .welcome-banner h3 { font-size:14px; font-weight:800; color:var(--text-dark); font-family:'Nunito',sans-serif; margin:0; }
   .welcome-banner p  { font-size:11px; color:#7A6050; margin-top:5px; line-height:1.5; max-width:220px; }
   .banner-circle {
     position:absolute; right:-10px; bottom:-10px;
@@ -341,9 +354,19 @@ const styles = `
   }
   .banner-fig { position:absolute; right:16px; bottom:0; width:80px; height:80px; }
 
-  /* Activity + misc */
-  .activity-card { background:#fff; border:1px solid #F0F0F8; border-radius:12px; padding:14px; flex:1; }
-  .activity-card h4 { font-size:12px; font-weight:700; color:var(--text-dark); margin-bottom:6px; }
+  /* Activity + misc Responsive Classes */
+  .activity-row { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  @media (min-width: 640px) { .activity-row { flex-direction: row; } }
+
+  .stats-col { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; width: 100%; justify-content: center; }
+  .stats-col > * { flex: 1; min-width: 100px; }
+  @media (min-width: 640px) { 
+    .stats-col { flex-direction: column; width: 120px; flex-shrink: 0; flex-wrap: nowrap; justify-content: flex-start; }
+    .stats-col > * { flex: unset; min-width: auto; }
+  }
+
+  .activity-card { background:#fff; border:1px solid #F0F0F8; border-radius:12px; padding:14px; flex:1; min-height:120px; }
+  .activity-card h4 { font-size:12px; font-weight:700; color:var(--text-dark); margin-bottom:6px; margin-top:0; }
   .progress-card {
     background:var(--green-progress); border-radius:12px; padding:14px;
     color:#fff; display:flex; flex-direction:column; align-items:center; gap:10px;
@@ -362,15 +385,19 @@ const styles = `
 
   /* Profile panel */
   .profile-panel {
-    width: 210px; flex-shrink:0;
-    border-left: 1px solid #F0F0F8;
+    width: 100%; flex-shrink:0;
+    border-top: 1px solid #F0F0F8;
     display: flex; flex-direction: column;
   }
+  @media (min-width: 768px) {
+    .profile-panel { width: 210px; border-top: none; border-left: 1px solid #F0F0F8; }
+  }
+  
   .profile-header {
     padding:14px 16px 10px; border-bottom:1px solid #F0F0F8;
     display:flex; align-items:center; justify-content:space-between;
   }
-  .profile-header h4 { font-size:12px; font-weight:700; color:var(--text-dark); }
+  .profile-header h4 { font-size:12px; font-weight:700; color:var(--text-dark); margin:0; }
   .profile-header span { font-size:10px; color:var(--text-muted); }
   .profile-body { padding:14px 16px; display:flex; flex-direction:column; align-items:center; }
   .avatar-ring { position:relative; width:64px; height:64px; margin-bottom:10px; }
@@ -393,7 +420,7 @@ const styles = `
   .divider-v { width:1px; background:#F0F0F8; }
   .ongoing-section { padding:0 16px 14px; flex:1; }
   .ongoing-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-  .ongoing-header h4 { font-size:12px; font-weight:700; color:var(--text-dark); }
+  .ongoing-header h4 { font-size:12px; font-weight:700; color:var(--text-dark); margin:0; }
   .ongoing-header a  { font-size:10px; color:var(--orange); text-decoration:none; }
   .task-item { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #F8F8FC; }
   .task-avatar {
@@ -407,35 +434,20 @@ const styles = `
   /* FEATURES SECTION */
   .features-section {
     background: #F0F4F0;
-    padding: 100px 44px;
+    padding: 60px 20px;
     border-top: 1px solid #E4EEE4;
   }
+  @media (min-width: 768px) { .features-section { padding: 100px 44px; } }
   .features-section h2 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(28px, 3vw, 42px);
-    font-weight: 900;
-    color: var(--text-dark);
-    text-align: center;
-    margin-bottom: 60px;
-    letter-spacing: -0.5px;
+    font-family: 'Nunito', sans-serif; font-size: clamp(28px, 3vw, 42px);
+    font-weight: 900; color: var(--text-dark); text-align: center;
+    margin-bottom: 60px; letter-spacing: -0.5px;
   }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
-  .feature-card {
-    background: #fff;
-    padding: 32px;
-    border-radius: 20px;
-    border: 1px solid #E8F0E8;
-    transition: all .22s;
-    cursor: default;
-  }
+  .features-grid { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (min-width: 900px) { .features-grid { grid-template-columns: repeat(3,1fr); } }
+  
+  .feature-card { background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #E8F0E8; transition: all .22s; }
   .feature-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,.08); transform: translateY(-3px); }
   .feature-icon {
     width: 48px; height: 48px; border-radius: 14px;
@@ -443,70 +455,48 @@ const styles = `
     margin-bottom: 20px; transition: transform .2s;
   }
   .feature-card:hover .feature-icon { transform: scale(1.1); }
-  .feature-card h3 { font-family:'Nunito',sans-serif; font-size:17px; font-weight:800; color:var(--text-dark); margin-bottom:10px; }
-  .feature-card p  { font-size:13px; color:var(--text-muted); line-height:1.65; }
+  .feature-card h3 { font-family:'Nunito',sans-serif; font-size:17px; font-weight:800; color:var(--text-dark); margin-bottom:10px; margin-top:0; }
+  .feature-card p  { font-size:13px; color:var(--text-muted); line-height:1.65; margin:0;}
 
   /* STATS SECTION */
-  .stats-section {
-    background: var(--orange);
-    padding: 80px 44px;
-    text-align: center;
-  }
+  .stats-section { background: var(--orange); padding: 60px 20px; text-align: center; }
+  @media (min-width: 768px) { .stats-section { padding: 80px 44px; } }
   .stats-section h2 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(24px, 2.5vw, 36px);
-    font-weight: 900; color: #fff;
-    margin-bottom: 48px; letter-spacing: -0.5px;
+    font-family: 'Nunito', sans-serif; font-size: clamp(24px, 2.5vw, 36px);
+    font-weight: 900; color: #fff; margin-bottom: 48px; letter-spacing: -0.5px; margin-top:0;
   }
-  .stats-grid { display:flex; justify-content:center; gap:80px; flex-wrap:wrap; }
-  .stat-item .num {
-    font-family:'Nunito',sans-serif;
-    font-size: clamp(36px, 4vw, 56px);
-    font-weight: 900; color: #fff; line-height: 1;
-  }
+  .stats-grid { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; }
+  @media (min-width: 768px) { .stats-grid { gap:80px; } }
+  .stat-item .num { font-family:'Nunito',sans-serif; font-size: clamp(36px, 4vw, 56px); font-weight: 900; color: #fff; line-height: 1; }
   .stat-item .lbl { font-size:14px; color:rgba(255,255,255,.75); margin-top:8px; font-weight:600; }
 
   /* HOW IT WORKS */
-  .how-section {
-    background: #F8F9FB;
-    padding: 100px 44px;
-  }
+  .how-section { background: #F8F9FB; padding: 60px 20px; }
+  @media (min-width: 768px) { .how-section { padding: 100px 44px; } }
   .how-section h2 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(28px, 3vw, 42px);
-    font-weight: 900; color: var(--text-dark);
-    text-align: center; margin-bottom: 60px; letter-spacing: -0.5px;
+    font-family: 'Nunito', sans-serif; font-size: clamp(28px, 3vw, 42px);
+    font-weight: 900; color: var(--text-dark); text-align: center; margin-bottom: 40px; letter-spacing: -0.5px;
   }
-  .steps-grid {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 32px;
-    max-width: 900px; margin: 0 auto;
-  }
-  @media (max-width:700px) { .steps-grid { grid-template-columns:1fr; } }
-  .step-card { text-align: center; padding: 40px 24px; }
+  .steps-grid { display: grid; gap: 32px; max-width: 900px; margin: 0 auto; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .steps-grid { grid-template-columns: repeat(3,1fr); } }
+  
+  .step-card { text-align: center; padding: 20px 10px; }
   .step-number {
     width: 56px; height: 56px; border-radius: 50%;
-    background: var(--orange-light);
-    border: 2px solid var(--orange);
+    background: var(--orange-light); border: 2px solid var(--orange);
     display: flex; align-items: center; justify-content: center;
     font-family: 'Nunito',sans-serif; font-size: 22px; font-weight: 900;
     color: var(--orange); margin: 0 auto 20px;
   }
   .step-card h3 { font-family:'Nunito',sans-serif; font-size:17px; font-weight:800; color:var(--text-dark); margin-bottom:10px; }
-  .step-card p  { font-size:13px; color:var(--text-muted); line-height:1.7; }
-  .steps-connector { display:flex; align-items:center; justify-content:center; gap:32px; }
-  .connector-line { flex:1; height:2px; background:linear-gradient(to right,var(--orange),#FFECD8); border-radius:2px; max-width:80px; }
+  .step-card p  { font-size:13px; color:var(--text-muted); line-height:1.7; margin:0;}
 
   /* CTA SECTION */
-  .cta-section {
-    background: linear-gradient(135deg, #1A1A2E 0%, #2D2D50 100%);
-    padding: 100px 44px;
-    text-align: center;
-  }
+  .cta-section { background: linear-gradient(135deg, #1A1A2E 0%, #2D2D50 100%); padding: 60px 20px; text-align: center; }
+  @media (min-width: 768px) { .cta-section { padding: 100px 44px; } }
   .cta-section h2 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(28px, 3.5vw, 48px);
-    font-weight: 900; color: #fff;
-    margin-bottom: 20px; letter-spacing: -1px;
+    font-family: 'Nunito', sans-serif; font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 900; color: #fff; margin-bottom: 20px; letter-spacing: -1px; margin-top:0;
   }
   .cta-section p { font-size:16px; color:rgba(255,255,255,.6); margin-bottom:40px; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.7; }
   .cta-btns { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
@@ -515,29 +505,30 @@ const styles = `
     border-radius:12px; padding:16px 36px;
     font-size:16px; font-weight:700; font-family:'Nunito',sans-serif;
     cursor:pointer; box-shadow:0 8px 24px rgba(247,123,58,.4);
-    transition:transform .18s, box-shadow .18s;
-    text-decoration:none; display:inline-block;
+    transition:transform .18s, box-shadow .18s; text-decoration:none; display:inline-block; width:100%;
   }
+  // @media (min-width: 600px) { .btn-cta-primary, .btn-cta-outline { width: auto; } }
   .btn-cta-primary:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(247,123,58,.5); color:#fff; }
   .btn-cta-outline {
     background:transparent; color:#fff;
     border:2px solid rgba(255,255,255,.25); border-radius:12px;
     padding:16px 36px; font-size:16px; font-weight:700; font-family:'Nunito',sans-serif;
-    cursor:pointer; transition:all .18s; text-decoration:none; display:inline-block;
+    cursor:pointer; transition:all .18s; text-decoration:none; display:inline-block; width:100%;
   }
   .btn-cta-outline:hover { border-color:#fff; color:#fff; background:rgba(255,255,255,.08); }
+  @media (min-width: 600px) { 
+    .btn-cta-primary, .btn-cta-outline { width: auto; } 
+  }
 
   /* FOOTER */
-  .e-footer {
-    background: #fff;
-    padding: 48px 44px;
-    border-top: 1px solid #EBEBF5;
-    display: flex; flex-direction: column; align-items: center; gap: 24px;
-  }
+  .e-footer { background: #fff; padding: 40px 20px; border-top: 1px solid #EBEBF5; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  @media (min-width: 768px) { .e-footer { padding: 48px 44px; } }
   .footer-top {
-    display: flex; justify-content: space-between; align-items: center;
-    width: 100%; max-width: 1100px; flex-wrap: wrap; gap: 24px;
+    display: flex; justify-content: space-between; align-items: center; flex-direction: column;
+    width: 100%; max-width: 1100px; gap: 24px;
   }
+  @media (min-width: 600px) { .footer-top { flex-direction: row; } }
+  
   .footer-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
   .footer-logo .f-icon {
     width: 32px; height: 32px; background: var(--orange); border-radius: 8px;
@@ -545,31 +536,10 @@ const styles = `
     font-family:'Nunito',sans-serif; font-weight:900; font-size:14px; color:#fff;
   }
   .footer-logo span { font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:var(--text-dark); }
-  .footer-links { display:flex; gap:28px; }
+  .footer-links { display:flex; gap:28px; flex-wrap: wrap; justify-content: center; }
   .footer-links a { font-size:13px; font-weight:600; color:var(--text-muted); text-decoration:none; transition:color .2s; }
   .footer-links a:hover { color: var(--orange); }
-  .footer-bottom {
-    border-top: 1px solid #EBEBF5;
-    width: 100%; max-width: 1100px;
-    padding-top: 20px;
-    text-align: center;
-    font-size: 12px; color: var(--text-light);
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    .e-nav { padding: 16px 20px; }
-    .e-nav-links { display: none; }
-    .e-hero { padding: 48px 20px 0; }
-    .hero-btns { flex-direction: column; align-items: center; }
-    .dashboard-outer { margin: 0 12px; }
-    .preview-area { padding: 0 8px; }
-    .floating-cards { display: none; }
-    .features-section, .how-section, .stats-section, .cta-section { padding: 60px 20px; }
-    .stats-grid { gap: 40px; }
-    .e-footer { padding: 32px 20px; }
-    .footer-top { flex-direction: column; align-items: flex-start; }
-  }
+  .footer-bottom { border-top: 1px solid #EBEBF5; width: 100%; max-width: 1100px; padding-top: 20px; text-align: center; font-size: 12px; color: var(--text-light); }
 `;
 
 const dots = Array.from({ length: 48 });
@@ -595,7 +565,7 @@ function Landing() {
           </ul>
           <div className="e-nav-actions">
             <Link to="/login" className="btn-signin-e">Sign In</Link>
-            <Link to="/register" className="btn-signup-e">Sign Up Free</Link>
+            <Link to="/register" className="btn-signup-e">Sign Up</Link>
           </div>
         </nav>
 
@@ -604,7 +574,7 @@ function Landing() {
           <h1>Manage Your Task<br />Like a Master.</h1>
           <p>
             TaskMaster boards, lists, and cards enable you to organize and prioritize
-            your projects in a fun, flexible, and rewarding way. Let's get started. 😎
+            your projects in a fun, flexible, and rewarding way. 
           </p>
           <div className="hero-btns">
             <Link to="/register" className="btn-get-started">Get Started</Link>
@@ -671,7 +641,7 @@ function Landing() {
                 <span>TaskMaster</span>
               </div>
               <div className="sidebar-create">
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-dark)' }}>Create<br />New Task</span>
+                <span>Create<br />New Task</span>
                 <div className="create-btn"><Plus size={14} /></div>
               </div>
               <div className="s-nav-item active">
@@ -726,11 +696,11 @@ function Landing() {
                     </div>
                   </div>
 
-                  {/* Activity row */}
-                  <div style={{ display: 'flex', gap: 12, flex: 1 }}>
+                  {/* Activity row (Class used for Responsive Flex) */}
+                  <div className="activity-row">
                     <div className="activity-card">
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <h4 style={{ margin: 0 }}>Activity</h4>
+                        <h4>Activity</h4>
                         <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>4 Tasks</span>
                       </div>
                       <div style={{ height: 60 }}>
@@ -757,8 +727,8 @@ function Landing() {
                       </div>
                     </div>
 
-                    {/* Progress + mini stats */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 120, flexShrink: 0 }}>
+                    {/* Progress + mini stats (Class used for Responsive Flex) */}
+                    <div className="stats-col">
                       <div className="progress-card">
                         <div className="progress-label">Progress</div>
                         <div style={{ position: 'relative', width: 70, height: 70 }}>
@@ -790,44 +760,44 @@ function Landing() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Profile panel */}
-            <div className="profile-panel">
-              <div className="profile-header">
-                <div>
-                  <h4>My Profile</h4>
-                  <span>75% profile completed</span>
-                </div>
-              </div>
-              <div className="profile-body">
-                <div className="avatar-ring">
-                  <div className="avatar-ph">TM</div>
-                </div>
-                <div className="profile-name">Task Manager</div>
-                <div className="profile-role">Project Lead at TaskMaster</div>
-                <div className="profile-stats">
-                  <div className="ps"><div className="n">15</div><div className="l">Achiev.</div></div>
-                  <div className="divider-v" />
-                  <div className="ps"><div className="n">3</div><div className="l">Teams</div></div>
-                </div>
-              </div>
-              <div className="ongoing-section">
-                <div className="ongoing-header">
-                  <h4>Ongoing Tasks</h4>
-                  <a href="#">View All</a>
-                </div>
-                {[
-                  { initials: 'JR', bg: 'linear-gradient(135deg,#f7c948,#f78848)', name: 'Call with Jonathan R.', date: 'Apr 25 · 9 AM – 11 AM' },
-                  { initials: 'VE', bg: 'linear-gradient(135deg,#48b8f7,#4870f7)', name: 'Meet with Vlad E.', date: 'Apr 26 · 9 AM – 11 AM' },
-                  { initials: 'CS', bg: 'linear-gradient(135deg,#a8d8a0,#4caf50)', name: 'Collab with Sam', date: 'Apr 26 · 1 PM – 5 PM' },
-                ].map((t, i) => (
-                  <div key={i} className="task-item">
-                    <div className="task-avatar" style={{ background: t.bg }}>{t.initials}</div>
-                    <div><div className="t-name">{t.name}</div><div className="t-date">{t.date}</div></div>
+                {/* Profile panel */}
+                <div className="profile-panel">
+                  <div className="profile-header">
+                    <div>
+                      <h4>My Profile</h4>
+                      <span>75% profile completed</span>
+                    </div>
                   </div>
-                ))}
+                  <div className="profile-body">
+                    <div className="avatar-ring">
+                      <div className="avatar-ph">TM</div>
+                    </div>
+                    <div className="profile-name">Task Manager</div>
+                    <div className="profile-role">Project Lead at TaskMaster</div>
+                    <div className="profile-stats">
+                      <div className="ps"><div className="n">15</div><div className="l">Achiev.</div></div>
+                      <div className="divider-v" />
+                      <div className="ps"><div className="n">3</div><div className="l">Teams</div></div>
+                    </div>
+                  </div>
+                  <div className="ongoing-section">
+                    <div className="ongoing-header">
+                      <h4>Ongoing Tasks</h4>
+                      <a href="#">View All</a>
+                    </div>
+                    {[
+                      { initials: 'JR', bg: 'linear-gradient(135deg,#f7c948,#f78848)', name: 'Call with Jonathan R.', date: 'Apr 25 · 9 AM – 11 AM' },
+                      { initials: 'VE', bg: 'linear-gradient(135deg,#48b8f7,#4870f7)', name: 'Meet with Vlad E.', date: 'Apr 26 · 9 AM – 11 AM' },
+                      { initials: 'CS', bg: 'linear-gradient(135deg,#a8d8a0,#4caf50)', name: 'Collab with Sam', date: 'Apr 26 · 1 PM – 5 PM' },
+                    ].map((t, i) => (
+                      <div key={i} className="task-item">
+                        <div className="task-avatar" style={{ background: t.bg }}>{t.initials}</div>
+                        <div><div className="t-name">{t.name}</div><div className="t-date">{t.date}</div></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

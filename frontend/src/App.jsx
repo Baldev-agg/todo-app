@@ -4,6 +4,9 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
+import Teamspaces from './pages/Teamspaces';
+import AcceptInvite from './pages/AcceptInvite';
+import TeamspaceDetail from './pages/TeamspaceDetail';
 
 function App() {
   return (
@@ -12,6 +15,19 @@ function App() {
         <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/teamspaces"
+          element={
+            <ProtectedRoute>
+              <Teamspaces />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invite/accept"
+          element={<AcceptInvite />}
+        />
+        <Route path="/teamspace/:id" element={<TeamspaceDetail />} />
         <Route
           path="/"
           element={
