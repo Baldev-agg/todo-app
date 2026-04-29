@@ -2,10 +2,27 @@ import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import { Link } from "react-router-dom";
 import {
-  LogOut, Plus, Trash2, CircleCheck, Clock,
-  Edit2, Calendar, LayoutDashboard, BarChart3,
-  ListTodo, Search, Rocket, MoreVertical,
-  Menu, X, ChevronsLeft, ChevronsRight, Building2, Users, Globe, Settings
+  LogOut,
+  Plus,
+  Trash2,
+  CircleCheck,
+  Clock,
+  Edit2,
+  Calendar,
+  LayoutDashboard,
+  BarChart3,
+  ListTodo,
+  Search,
+  Rocket,
+  MoreVertical,
+  Menu,
+  X,
+  ChevronsLeft,
+  ChevronsRight,
+  Building2,
+  Users,
+  Globe,
+  Settings,
 } from "lucide-react";
 
 const LG = 1024;
@@ -23,12 +40,13 @@ function Dashboard() {
   const [editingDueDate, setEditingDueDate] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [dueDate, setDueDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [isDesktop, setIsDesktop] = useState(
-    typeof window !== "undefined" ? window.innerWidth >= LG : true
+    typeof window !== "undefined" ? window.innerWidth >= LG : true,
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(
-    typeof window !== "undefined" ? window.innerWidth >= LG : true
+    typeof window !== "undefined" ? window.innerWidth >= LG : true,
   );
 
   const handleResize = useCallback(() => {
@@ -61,33 +79,52 @@ function Dashboard() {
       const res = await API.get("/todos");
       setTodos(res.data);
       setError("");
-    } catch { setError("Failed to load tasks"); }
-    finally { setLoading(false); }
+    } catch {
+      setError("Failed to load tasks");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addTodo = async () => {
     if (!text.trim()) return;
     setAddingTodo(true);
     try {
-      const res = await API.post("/todos", { text: text.trim(), priority, dueDate: dueDate || null });
+      const res = await API.post("/todos", {
+        text: text.trim(),
+        priority,
+        dueDate: dueDate || null,
+      });
       setTodos([...todos, res.data]);
-      setText(""); setPriority("Medium"); setDueDate(""); setError("");
-    } catch { setError("Failed to add task"); }
-    finally { setAddingTodo(false); }
+      setText("");
+      setPriority("Medium");
+      setDueDate("");
+      setError("");
+    } catch {
+      setError("Failed to add task");
+    } finally {
+      setAddingTodo(false);
+    }
   };
 
   const toggleTodo = async (id, completed) => {
     try {
       await API.put(`/todos/${id}`, { completed: !completed });
-      setTodos(todos.map(t => t._id === id ? { ...t, completed: !completed } : t));
-    } catch { setError("Failed to update task"); }
+      setTodos(
+        todos.map((t) => (t._id === id ? { ...t, completed: !completed } : t)),
+      );
+    } catch {
+      setError("Failed to update task");
+    }
   };
 
   const deleteTodo = async (id) => {
     try {
       await API.delete(`/todos/${id}`);
-      setTodos(todos.filter(t => t._id !== id));
-    } catch { setError("Failed to delete task"); }
+      setTodos(todos.filter((t) => t._id !== id));
+    } catch {
+      setError("Failed to delete task");
+    }
   };
 
   const startEdit = (id, currentText, currentPriority, currentDueDate) => {
@@ -98,18 +135,32 @@ function Dashboard() {
   };
 
   const saveEdit = async (id) => {
-    if (!editingText.trim()) { setError("Task text cannot be empty"); return; }
+    if (!editingText.trim()) {
+      setError("Task text cannot be empty");
+      return;
+    }
     try {
       const res = await API.put(`/todos/${id}`, {
-        text: editingText.trim(), priority: editingPriority, dueDate: editingDueDate || null,
+        text: editingText.trim(),
+        priority: editingPriority,
+        dueDate: editingDueDate || null,
       });
-      setTodos(todos.map(t => t._id === id ? res.data : t));
-      setEditingId(null); setEditingText(""); setEditingPriority("Medium"); setEditingDueDate(""); setError("");
-    } catch { setError("Failed to update task"); }
+      setTodos(todos.map((t) => (t._id === id ? res.data : t)));
+      setEditingId(null);
+      setEditingText("");
+      setEditingPriority("Medium");
+      setEditingDueDate("");
+      setError("");
+    } catch {
+      setError("Failed to update task");
+    }
   };
 
   const cancelEdit = () => {
-    setEditingId(null); setEditingText(""); setEditingPriority("Medium"); setEditingDueDate("");
+    setEditingId(null);
+    setEditingText("");
+    setEditingPriority("Medium");
+    setEditingDueDate("");
   };
 
   const isOverdue = (todo) => {
@@ -121,10 +172,14 @@ function Dashboard() {
 
   const getPriorityStyles = (p) => {
     switch (p) {
-      case "High": return "bg-red-500 text-white";
-      case "Medium": return "bg-amber-400 text-black";
-      case "Low": return "bg-emerald-500 text-white";
-      default: return "bg-gray-400 text-white";
+      case "High":
+        return "bg-red-500 text-white";
+      case "Medium":
+        return "bg-amber-400 text-black";
+      case "Low":
+        return "bg-emerald-500 text-white";
+      default:
+        return "bg-gray-400 text-white";
     }
   };
 
@@ -139,8 +194,13 @@ function Dashboard() {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  const logout = () => { localStorage.removeItem("token"); window.location.href = "/landing"; };
-  const handleKeyPress = (e) => { if (e.key === "Enter" && !addingTodo) addTodo(); };
+  const logout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/landing";
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !addingTodo) addTodo();
+  };
   const handleEditKeyPress = (e, id) => {
     if (e.key === "Enter") saveEdit(id);
     else if (e.key === "Escape") cancelEdit();
@@ -148,12 +208,19 @@ function Dashboard() {
 
   const priorityWeight = { High: 1, Medium: 2, Low: 3 };
   const sortedTodos = [...todos].sort((a, b) => {
-    const aO = isOverdue(a), bO = isOverdue(b);
-    if (aO && !bO) return -1; if (!aO && bO) return 1;
+    const aO = isOverdue(a),
+      bO = isOverdue(b);
+    if (aO && !bO) return -1;
+    if (!aO && bO) return 1;
     if (priorityWeight[a.priority] !== priorityWeight[b.priority])
       return priorityWeight[a.priority] - priorityWeight[b.priority];
     return new Date(a.createdAt) - new Date(b.createdAt);
   });
+
+  const searchedTasks = sortedTodos.filter(task => 
+  task.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
+);
 
   return (
     <div className="min-h-screen bg-[#F8F9FB] flex font-sans antialiased text-slate-800 relative">
@@ -269,6 +336,8 @@ function Dashboard() {
               <input
                 type="text"
                 placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 bg-white border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-orange-500/5 transition shadow-sm text-sm"
               />
             </div>
@@ -390,7 +459,7 @@ function Dashboard() {
                   </p>
                 </div>
               ) : (
-                sortedTodos.map((todo) => (
+                searchedTasks.map((todo) => (
                   <div
                     key={todo._id}
                     className={`
