@@ -54,25 +54,29 @@ function Dashboard() {
   };
 
   const addTodo = async () => {
-    if (!text.trim()) return;
-    setAddingTodo(true);
-    try {
-      const res = await API.post("/todos", {
-        text: text.trim(),
-        priority,
-        dueDate: dueDate || null,
-      });
-      setTodos([...todos, res.data]);
-      setText("");
-      setPriority("Medium");
-      setDueDate("");
-      setError("");
-    } catch {
-      setError("Failed to add task");
-    } finally {
-      setAddingTodo(false);
-    }
-  };
+  if (!text.trim()) return;
+  setAddingTodo(true);
+  try {
+    // Axios interceptor apne aap token bhej dega, 
+    // yahan extra header likhne ki zaroorat nahi hai.
+    const res = await API.post("/todos", {
+      text: text.trim(),
+      priority,
+      dueDate: dueDate || null,
+    });
+    
+    setTodos([...todos, res.data]);
+    setText("");
+    setPriority("Medium");
+    setDueDate("");
+    setError("");
+  } catch (err) {
+    console.error("Error adding todo:", err);
+    setError("Failed to add task: " + (err.response?.data?.message || "Server Error"));
+  } finally {
+    setAddingTodo(false);
+  }
+};
 
   const toggleTodo = async (id, completed) => {
     try {
@@ -463,7 +467,7 @@ function Dashboard() {
                       </div>
 
                       {/* Action buttons */}
-                      <div className="flex-shrink-0 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <div className="flex-shrink-0 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() =>
                             !todo.completed &&
@@ -475,7 +479,7 @@ function Dashboard() {
                             )
                           }
                           disabled={todo.completed}
-                          className={`p-1.5 rounded-xl transition ${todo.completed ? "text-slate-200 dark:text-slate-700" : "text-slate-400 dark:text-slate-500 hover:text-[#F77B3A] dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950"}`}
+                          className={`p-1.5 rounded-xl transition ${todo.completed ? "text-slate-200 dark:text-slate-700 cursor-not-allowed" : "text-slate-400 dark:text-slate-500 hover:text-[#F77B3A] dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950"}`}
                         >
                           <Edit2 size={16} />
                         </button>
@@ -484,7 +488,7 @@ function Dashboard() {
                             !todo.completed && deleteTodo(todo._id)
                           }
                           disabled={todo.completed}
-                          className={`p-1.5 rounded-xl transition ${todo.completed ? "text-slate-200 dark:text-slate-700" : "text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"}`}
+                          className={`p-1.5 rounded-xl transition ${todo.completed ? "text-slate-200 dark:text-slate-700 cursor-not-allowed" : "text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"}`}
                         >
                           <Trash2 size={16} />
                         </button>

@@ -7,28 +7,6 @@ const sendEmail = require("../utils/sendEmail"); // ADD THIS
 const authMiddleware = require("../middleware/authMiddleware");
 
 // 1. GET ALL TASKS (For Main Dashboard - Personal Space)
-// router.get("/", authMiddleware, async (req, res) => {
-//   try {
-//     const userId = req.userId || req.userId;
-    
-//     // User ka Personal Space dhundo
-//     const personalSpace = await Workspace.findOne({ 
-//       createdBy: userId, 
-//       name: "Personal Space" 
-//     });
-
-//     if (!personalSpace) {
-//       return res.status(200).json([]); // Agar nahi hai toh khali list bhej do
-//     }
-
-//     // Personal space ke tasks bhej do (Yehi tumhare purane migrate kiye hue tasks hain!)
-//     const todos = await Todo.find({ workspaceId: personalSpace._id });
-//     res.status(200).json(todos);
-//   } catch (error) {
-//     console.error("Error fetching personal todos:", error);
-//     res.status(500).json({ message: "Server error fetching todos" });
-//   }
-// });
 router.get("/", authMiddleware, async (req, res) => {
   try {
     // FIX: Check your authMiddleware, it usually sets req.user
@@ -65,7 +43,23 @@ router.get("/:workspaceId", authMiddleware, async (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { text, description, status, priority, dueDate, workspaceId, assigneeEmail } = req.body;
+    const userId = req.userId;
     let targetAssigneeId = null;
+    let targetWorkspaceId = workspaceId;
+
+    // Agar workspaceId nahi diya gaya, toh Personal Space use karo
+    if (!targetWorkspaceId) {
+      const personalSpace = await Workspace.findOne({ 
+        createdBy: userId, 
+        name: "Personal Space" 
+      });
+      
+      if (!personalSpace) {
+        return res.status(400).json({ message: "Personal Space not found. Please create one first." });
+      }
+      
+      targetWorkspaceId = personalSpace._id;
+    }
 
     // Agar email aaya hai, toh pehle user ko DB mein dhundo
     if (assigneeEmail) {
@@ -92,7 +86,7 @@ router.post("/", authMiddleware, async (req, res) => {
       completed: status === "Done",
       priority: priority || "Medium",
       dueDate: dueDate || null,
-      workspaceId: workspaceId,
+      workspaceId: targetWorkspaceId,
       assigneeId: targetAssigneeId
     });
 
@@ -101,50 +95,11 @@ router.post("/", authMiddleware, async (req, res) => {
     const populatedTodo = await Todo.findById(newTodo._id).populate("assigneeId", "name email");
     res.status(201).json(populatedTodo);
   } catch (error) {
+    console.error("Error creating todo:", error);
     res.status(500).json({ message: "Server error creating todo" });
   }
 });
 
-// 4. UPDATE TASK (Toggle Complete)
-// router.put("/:id", authMiddleware, async (req, res) => {
-//   try {
-//     const { text, description, status, priority, dueDate, assigneeEmail } = req.body;
-//     let targetAssigneeId = undefined; // undefined means don't update if not passed
-
-//     // Agar edit karte waqt naya email dala hai
-//     if (assigneeEmail) {
-//       const assignedUser = await User.findOne({ email: assigneeEmail });
-//       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-//       if (assignedUser) {
-//         targetAssigneeId = assignedUser._id;
-        
-//         // Naye bande ko mail bhej do
-//         await sendEmail({
-//           email: assignedUser.email,
-//           subject: "A task has been assigned to you",
-//           message: `Task Updated and Assigned to you: "${text}".`,
-//           // inviteUrl: "http://localhost:5173/login"
-//           inviteUrl: `${frontendUrl}/login`
-//         });
-//       }
-//     }
-
-//     const updateData = {
-//       text, description, status, priority,
-//       completed: status === "Done",
-//       dueDate: dueDate || null
-//     };
-    
-//     if (targetAssigneeId !== undefined) {
-//       updateData.assigneeId = targetAssigneeId;
-//     }
-
-//     const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate("assigneeId", "name email");
-//     res.status(200).json(updatedTodo);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error updating todo" });
-//   }
-// });
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { text, description, status, priority, dueDate, assigneeEmail, completed } = req.body;
