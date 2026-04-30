@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Teamspaces from './pages/Teamspaces';
 import AcceptInvite from './pages/AcceptInvite';
@@ -19,7 +20,9 @@ function App() {
           path="/teamspaces"
           element={
             <ProtectedRoute>
-              <Teamspaces />
+              <Layout>
+                <Teamspaces />
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -27,12 +30,23 @@ function App() {
           path="/invite/accept"
           element={<AcceptInvite />}
         />
-        <Route path="/teamspace/:id" element={<TeamspaceDetail />} />
+        <Route 
+          path="/teamspace/:id" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <TeamspaceDetail />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           }
         />
