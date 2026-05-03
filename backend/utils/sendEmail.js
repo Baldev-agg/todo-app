@@ -40,5 +40,4 @@ const sendEmail = async (options) => {
     throw error; 
   }
 };
-
 module.exports = sendEmail;
