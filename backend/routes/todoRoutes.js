@@ -140,7 +140,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
     const updatedTodo = await Todo.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true },
+      { returnDocument: 'after' },
     ).populate("assigneeId", "name email");
 
     res.status(200).json(updatedTodo);

@@ -5,13 +5,15 @@ const env = require('dotenv').config(); // Load env variables from .env file
 const sendEmail = async (options) => {
   // 1. Create a transporter (Testing with Gmail)
   const transporter = nodemailer.createTransport({
-    service: 'Gmail',
+    host: 'smtp.gmail.com', // 'service: Gmail' ki jagah explicitly host aur port define karo
+    port: 465,
+    secure: true, 
     auth: {
-      // user: 'baldevdevloper1@gmail.com', // Apna Gmail id daalo
-      // pass: 'qtyr jygc qjcs eeop' // Apna App Password daalo (NOT normal password)
-      user: process.env.EMAIL_USER, // Env variable se uthayega
-      pass: process.env.EMAIL_PASS
-    }
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS  
+    },
+    // 🚨 Ye line sabse zaroori hai IPv6 ENETUNREACH error ko fix karne ke liye
+    family: 4 
   });
 
   // 2. Define the email options
