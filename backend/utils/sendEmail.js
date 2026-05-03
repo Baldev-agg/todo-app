@@ -1,40 +1,44 @@
-// backend/utils/sendEmail.js
 const nodemailer = require('nodemailer');
-const env = require('dotenv').config(); // Load env variables from .env file
 
 const sendEmail = async (options) => {
-  // 1. Create a transporter (Testing with Gmail)
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // 'service: Gmail' ki jagah explicitly host aur port define karo
-    port: 465,
-    secure: true, 
-    auth: {
-      user: process.env.EMAIL_USER, 
-      pass: process.env.EMAIL_PASS  
-    },
-    // 🚨 Ye line sabse zaroori hai IPv6 ENETUNREACH error ko fix karne ke liye
-    family: 4 
-  });
+  try {
+    console.log(`📩 Preparing to send email to: ${options.email}`);
 
-  // 2. Define the email options
-  const mailOptions = {
-    from: `TaskMaster App <${process.env.EMAIL_USER}>`,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-    // HTML is better for nice looking emails
-    html: `
-      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-        <h2 style="color: #F77B3A;">TaskMaster Invitation</h2>
-        <p>${options.message}</p>
-        <a href="${options.inviteUrl}" style="display: inline-block; padding: 10px 20px; background-color: #F77B3A; color: white; text-decoration: none; border-radius: 5px; margin-top: 15px;">Accept Invitation</a>
-        <p style="margin-top: 20px; font-size: 12px; color: #888;">If you did not expect this invitation, please ignore this email.</p>
-      </div>
-    `
-  };
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,     // 🚨 465 ki jagah 587 use kar rahe hain
+      secure: false, // 🚨 587 ke liye ye false hona zaroori hai
+      auth: {
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS  
+      },
+      family: 4      // IPv4 force karne ke liye
+    });
 
-  // 3. Send the email
-  await transporter.sendMail(mailOptions);
+    console.log("⏳ Connecting to Gmail SMTP server...");
+
+    const mailOptions = {
+      from: `TaskMaster App <${process.env.EMAIL_USER}>`,
+      to: options.email,
+      subject: options.subject,
+      text: options.message,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #F77B3A;">TaskMaster Invitation</h2>
+          <p>${options.message}</p>
+          <a href="${options.inviteUrl}" style="display: inline-block; padding: 10px 20px; background-color: #F77B3A; color: white; text-decoration: none; border-radius: 5px; margin-top: 15px;">Open TaskMaster</a>
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully! Message ID:", info.messageId);
+
+  } catch (error) {
+    console.error("❌ CRITICAL EMAIL ERROR:", error);
+    // Error ko aage pass karna zaroori hai taaki frontend par bhi error dikhe
+    throw error; 
+  }
 };
 
 module.exports = sendEmail;
