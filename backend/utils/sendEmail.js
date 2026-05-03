@@ -1,19 +1,22 @@
 // backend/utils/sendEmail.js
 const nodemailer = require('nodemailer');
+const env = require('dotenv').config(); // Load env variables from .env file
 
 const sendEmail = async (options) => {
   // 1. Create a transporter (Testing with Gmail)
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: 'baldevdevloper1@gmail.com', // Apna Gmail id daalo
-      pass: 'qtyr jygc qjcs eeop' // Apna App Password daalo (NOT normal password)
+      // user: 'baldevdevloper1@gmail.com', // Apna Gmail id daalo
+      // pass: 'qtyr jygc qjcs eeop' // Apna App Password daalo (NOT normal password)
+      user: process.env.EMAIL_USER, // Env variable se uthayega
+      pass: process.env.EMAIL_PASS
     }
   });
 
   // 2. Define the email options
   const mailOptions = {
-    from: 'TaskMaster App <baldevdevloper1@gmail.com>',
+    from: `TaskMaster App <${process.env.EMAIL_USER}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,
