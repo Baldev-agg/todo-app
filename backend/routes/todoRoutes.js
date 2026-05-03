@@ -2,159 +2,172 @@ const express = require("express");
 const router = express.Router();
 const Todo = require("../models/Todo");
 const Workspace = require("../models/Workspace");
-const User = require("../models/User"); // ADD THIS
-const sendEmail = require("../utils/sendEmail"); // ADD THIS
+const WorkspaceMember = require("../models/WorkspaceMember"); // 🛡️ Role check ke liye zaroori hai
+const User = require("../models/User");
+const sendEmail = require("../utils/sendEmail");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// 1. GET ALL TASKS (For Main Dashboard - Personal Space)
+// ─────────────────────────────────────────────────────────────────
+// 🛡️ HELPER: Check if user has permission to modify tasks
+// ─────────────────────────────────────────────────────────────────
+const checkPermission = async (workspaceId, userId) => {
+  if (!workspaceId) return true; // Dashboard tasks (personal) are always allowed
+
+  const membership = await WorkspaceMember.findOne({
+    workspaceId,
+    userId,
+    status: "Accepted",
+  });
+
+  // Viewer role cannot create, edit, or delete
+  if (!membership || membership.role === "Viewer") {
+    return false;
+  }
+  return true;
+};
+
+// 1. GET ALL TASKS (Main Dashboard)
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    // FIX: Check your authMiddleware, it usually sets req.user
-    const userId = req.userId || req.userId; 
-    
-    const personalSpace = await Workspace.findOne({ 
-      createdBy: userId, 
-      name: "Personal Space" 
+    const userId = req.userId;
+    const personalSpace = await Workspace.findOne({
+      createdBy: userId,
+      name: "Personal Space",
     });
 
-    if (!personalSpace) return res.status(200).json([]);
+    const query = {
+      $or: [
+        { createdBy: userId, workspaceId: { $exists: false } },
+        { createdBy: userId, workspaceId: null },
+      ],
+    };
+    if (personalSpace) query.$or.push({ workspaceId: personalSpace._id });
 
-    const todos = await Todo.find({ workspaceId: personalSpace._id });
+    const todos = await Todo.find(query).sort({ createdAt: -1 });
     res.status(200).json(todos);
   } catch (error) {
-    console.error("Error fetching personal todos:", error);
-    res.status(500).json({ message: "Server error fetching todos" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// 2. GET TEAMSPACE TASKS (For Teamspace Detail Page)
+// 2. GET TEAMSPACE TASKS
 router.get("/:workspaceId", authMiddleware, async (req, res) => {
   try {
     const { workspaceId } = req.params;
-    // .populate() se hume user ka name aur email mil jayega
-    const todos = await Todo.find({ workspaceId: workspaceId }).populate("assigneeId", "name email");
+    const todos = await Todo.find({ workspaceId }).populate(
+      "assigneeId",
+      "name email",
+    );
     res.status(200).json(todos);
   } catch (error) {
-    res.status(500).json({ message: "Server error fetching team todos" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// 3. CREATE TASK (Smart Route - Handles both Dashboard & Teamspace)
+// 3. CREATE TASK (🛡️ Role Protected)
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { text, description, status, priority, dueDate, workspaceId, assigneeEmail } = req.body;
+    const {
+      text,
+      description,
+      status,
+      priority,
+      dueDate,
+      workspaceId,
+      assigneeEmail,
+    } = req.body;
     const userId = req.userId;
-    let targetAssigneeId = null;
-    let targetWorkspaceId = workspaceId;
 
-    // Agar workspaceId nahi diya gaya, toh Personal Space use karo
-    if (!targetWorkspaceId) {
-      const personalSpace = await Workspace.findOne({ 
-        createdBy: userId, 
-        name: "Personal Space" 
-      });
-      
-      if (!personalSpace) {
-        return res.status(400).json({ message: "Personal Space not found. Please create one first." });
-      }
-      
-      targetWorkspaceId = personalSpace._id;
+    // 🛡️ BACKEND LOCK: Viewer check
+    const hasPermission = await checkPermission(workspaceId, userId);
+    if (!hasPermission) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Viewers cannot create tasks." });
     }
 
-    // Agar email aaya hai, toh pehle user ko DB mein dhundo
+    let targetAssigneeId = null;
     if (assigneeEmail) {
       const assignedUser = await User.findOne({ email: assigneeEmail });
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      if (assignedUser) {
-        targetAssigneeId = assignedUser._id;
-        
-        // EMAIL BHEJO!
-        await sendEmail({
-          email: assignedUser.email,
-          subject: "You have been assigned a new task!",
-          message: `You have been assigned to a new task: "${text}".\nPriority: ${priority || 'Medium'}\n\nPlease login to TaskMaster to view it.`,
-          // inviteUrl: "http://localhost:5173/login" 
-          inviteUrl: `${frontendUrl}/login`
-        });
-      }
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      if (assignedUser) targetAssigneeId = assignedUser._id;
+      // ... Email logic ...
+      await sendEmail({
+        email: assignedUser.email,
+        subject: "You have been assigned a new task!",
+        message: `You have been assigned to a new task: "${text}".\nPriority: ${priority || "Medium"}\n\nPlease login to TaskMaster to view it.`,
+        // inviteUrl: "http://localhost:5173/login"
+        inviteUrl: `${frontendUrl}/login`,
+      });
     }
 
     const newTodo = new Todo({
       text,
       description,
-      status: status || "Not started",
-      completed: status === "Done",
-      priority: priority || "Medium",
-      dueDate: dueDate || null,
-      workspaceId: targetWorkspaceId,
-      assigneeId: targetAssigneeId
+      status,
+      priority,
+      dueDate,
+      workspaceId: workspaceId || null,
+      createdBy: userId,
+      assigneeId: targetAssigneeId,
     });
 
     await newTodo.save();
-    // Return populated todo so frontend gets the name immediately
-    const populatedTodo = await Todo.findById(newTodo._id).populate("assigneeId", "name email");
+    const populatedTodo = await Todo.findById(newTodo._id).populate(
+      "assigneeId",
+      "name email",
+    );
     res.status(201).json(populatedTodo);
   } catch (error) {
-    console.error("Error creating todo:", error);
-    res.status(500).json({ message: "Server error creating todo" });
+    res.status(500).json({ message: "Error creating task" });
   }
 });
 
+// 4. UPDATE TASK (🛡️ Role Protected)
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { text, description, status, priority, dueDate, assigneeEmail, completed } = req.body;
-    
-    let updateData = { ...req.body }; // Jo bhi frontend se aaye usko le lo
+    const todo = await Todo.findById(req.params.id);
+    if (!todo) return res.status(404).json({ message: "Task not found" });
 
-    // Agar status change hua hai to completed toggle karo
-    if (status) {
-      updateData.completed = (status === "Done");
-    } 
-    // Agar sirf completed (checkbox) aaya hai dashboard se
-    else if (completed !== undefined) {
-      updateData.status = completed ? "Done" : "Not started";
-    }
-
-    let targetAssigneeId = undefined;
-    if (assigneeEmail) {
-      const assignedUser = await User.findOne({ email: assigneeEmail });
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      if (assignedUser) {
-        targetAssigneeId = assignedUser._id;
-        updateData.assigneeId = targetAssigneeId;
-
-        await sendEmail({
-          email: assignedUser.email,
-          subject: "Task Updated",
-          message: `Task: "${text || 'A task'}" has been updated/assigned to you.`,
-          inviteUrl: `${frontendUrl}/login`
-        });
-      }
+    // 🛡️ BACKEND LOCK: Viewer check
+    const hasPermission = await checkPermission(todo.workspaceId, req.userId);
+    if (!hasPermission) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Viewers cannot edit tasks." });
     }
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      req.params.id, 
-      { $set: updateData }, 
-      { new: true }
+      req.params.id,
+      { $set: req.body },
+      { new: true },
     ).populate("assigneeId", "name email");
 
     res.status(200).json(updatedTodo);
   } catch (error) {
-    console.error("Update Error:", error);
-    res.status(500).json({ message: "Server error updating todo" });
+    res.status(500).json({ message: "Error updating task" });
   }
 });
 
-// 5. DELETE TASK
+// 5. DELETE TASK (🛡️ Role Protected)
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
+    const todo = await Todo.findById(req.params.id);
+    if (!todo) return res.status(404).json({ message: "Task not found" });
+
+    // 🛡️ BACKEND LOCK: Viewer check
+    const hasPermission = await checkPermission(todo.workspaceId, req.userId);
+    if (!hasPermission) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Viewers cannot delete tasks." });
+    }
+
     await Todo.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Task deleted successfully" });
+    res.status(200).json({ message: "Deleted" });
   } catch (error) {
-    console.error("Error deleting todo:", error);
-    res.status(500).json({ message: "Server error deleting todo" });
+    res.status(500).json({ message: "Error deleting task" });
   }
 });
 
 module.exports = router;
-

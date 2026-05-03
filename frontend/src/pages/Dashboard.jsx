@@ -13,6 +13,7 @@ import {
   AlertCircle,
   X,
 } from "lucide-react";
+import ProfileMenu from "../components/ProfileMenu";
 
 function Dashboard() {
   const [todos, setTodos] = useState([]);
@@ -238,9 +239,7 @@ function Dashboard() {
               className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl outline-none focus:ring-4 focus:ring-orange-500/5 transition shadow-sm text-sm dark:text-white"
             />
           </div>
-          <div className="w-9 h-9 flex-shrink-0 bg-indigo-50 dark:bg-indigo-900 rounded-full flex items-center justify-center text-indigo-500 dark:text-indigo-300 font-bold border border-indigo-100 dark:border-indigo-800 uppercase text-sm">
-            {userName[0]}
-          </div>
+          <ProfileMenu />
         </div>
       </header>
 

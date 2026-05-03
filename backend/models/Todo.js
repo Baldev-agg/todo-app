@@ -5,12 +5,13 @@ const TodoSchema = new mongoose.Schema({
   description: { type: String, default: "" }, 
   status: { type: String, default: "Not started" },
   completed: { type: Boolean, default: false },
-  workspaceId: { // <-- Yeh Zaroori Hai
+  workspaceId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: "Workspace",
-    required: true,
+    required: false, // <-- ISKO FALSE KARO ya hata do
+    default: null    // Dashboard tasks ke liye null allow karega
   },
-  assigneeId: { // <-- Naya team feature
+  assigneeId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null
@@ -21,7 +22,8 @@ const TodoSchema = new mongoose.Schema({
     default: 'Medium'
   },
   dueDate: { type: Date, default: null },
-  createdAt:{ type: Date, default: Date.now }
+  createdAt:{ type: Date, default: Date.now },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
 module.exports = mongoose.model("Todo", TodoSchema);

@@ -181,4 +181,72 @@ router.post("/accept-invite/:token", authMiddleware, async (req, res) => {
   }
 });
 
+// 5. Get Workspace Members (GET)
+router.get("/:workspaceId/members", authMiddleware, async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+
+    // Fetch all accepted members of the workspace
+    const members = await WorkspaceMember.find({
+      workspaceId: workspaceId,
+      status: "Accepted"
+    }).populate("userId", "name email");
+
+    // Map the results to return only needed fields
+    const memberList = members.map(member => ({
+      _id: member.userId ? member.userId._id : member._id,
+      name: member.userId ? member.userId.name : "Unknown",
+      email: member.email
+    }));
+
+    res.status(200).json(memberList);
+
+  } catch (error) {
+    console.error("Error fetching workspace members:", error);
+    res.status(500).json({ message: "Server Error fetching members" });
+  }
+});
+
+//6. Delete a Workspace (Only Owner can do this)
+router.delete("/:workspaceId", authMiddleware, async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+    const userId = req.userId;
+
+    // Step 1: Check if the workspace exists
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    // Step 2: Role check - Sirf Owner hi delete kar sakta hai
+    // Hum WorkspaceMember table mein check karenge ki is user ka role kya hai
+    const memberRecord = await WorkspaceMember.findOne({
+      workspaceId: workspaceId,
+      userId: userId,
+      status: "Accepted"
+    });
+
+    if (!memberRecord || memberRecord.role !== "Owner") {
+      return res.status(403).json({ message: "Access denied. Only the Owner can delete this workspace." });
+    }
+
+    // Step 3: Delete everything related to this workspace
+    // Pehle saare members ko delete karo
+    await WorkspaceMember.deleteMany({ workspaceId: workspaceId });
+    
+    // Phir actual workspace ko delete karo
+    await Workspace.findByIdAndDelete(workspaceId);
+
+    // Note: Agar tum chaho toh yahan Todo.deleteMany({ workspaceId }) bhi add kar sakte ho 
+    // taaki us workspace ke saare tasks bhi saaf ho jayein.
+
+    res.status(200).json({ message: "Workspace and its members deleted successfully" });
+
+  } catch (error) {
+    console.error("Error deleting workspace:", error);
+    res.status(500).json({ message: "Server Error deleting workspace" });
+  }
+});
+
 module.exports = router;
